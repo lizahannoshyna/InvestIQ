@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+@keyframes floatPurple {
+
+  0%,
+  100% {
+    transform: translate(0px, 0px) scale(1);
+    opacity: 0.2;
+  }
+
+  50% {
+    transform: translate(40px, -50px) scale(1.25);
+    opacity: 0.4;
+  }
+}
