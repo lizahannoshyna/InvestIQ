@@ -1,4 +1,4 @@
-import React, { useEffect, lazy, Suspense } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "./store";
 import { checkAuthSession } from "./store/authSlice";
@@ -30,15 +30,12 @@ function App() {
       <Routes>
         {isAuthenticated ? (
           <>
-            {/* Базовий маршрут InvestIQ та вкладені теми */}
             <Route path="/InvestIQ" element={<TransactionsPage />}>
-              {/* Автоматичний редирект з /InvestIQ на /InvestIQ/expenses */}
               <Route index element={<Navigate to="expenses" replace />} />
               <Route path="expenses" element={null} />
               <Route path="income" element={null} />
             </Route>
 
-            {/* Редиректи з інших шляхів */}
             <Route path="/" element={<Navigate to="/InvestIQ/expenses" replace />} />
             <Route path="/login" element={<Navigate to="/InvestIQ/expenses" replace />} />
             <Route path="*" element={<Navigate to="/InvestIQ/expenses" replace />} />
