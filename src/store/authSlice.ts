@@ -15,9 +15,35 @@ const initialState: AuthState = {
   user: null,
   profile: null,
   isAuthenticated: false,
-  loading: false,
+  loading: true,
   error: null,
 };
+
+export const checkAuthSession = createAsyncThunk(
+  'auth/checkSession',
+  async (_, { rejectWithValue }) => {
+    try {
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+      if (sessionError || !session) {
+        return null;
+      }
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', session.user.id)
+        .single();
+
+      return {
+        user: session.user,
+        profile: (profile as Profile) || null,
+      };
+    } catch (err: any) {
+      return rejectWithValue(err.message || 'Помилка перевірки сесії');
+    }
+  }
+);
 
 export const loginWithEmail = createAsyncThunk(
   'auth/loginWithEmail',
@@ -32,7 +58,18 @@ export const loginWithEmail = createAsyncThunk(
       });
 
       if (error) throw error;
-      return data.user;
+      if (!data.user) throw new Error('Користувача не знайдено');
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', data.user.id)
+        .single();
+
+      return {
+        user: data.user,
+        profile: (profile as Profile) || null,
+      };
     } catch (err: any) {
       return rejectWithValue(err.message || 'Помилка авторизації');
     }
@@ -56,6 +93,20 @@ export const loginWithGoogle = createAsyncThunk(
     }
   }
 );
+
+export const logoutUser = createAsyncThunk(
+  'auth/logoutUser',
+  async (_, { rejectWithValue }) => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+    } catch (err: any) {
+      return rejectWithValue(err.message || 'Помилка виходу з системи');
+    }
+  }
+);
+
+export const logout = logoutUser;
 
 export const fetchUserProfile = createAsyncThunk(
   'auth/fetchProfile',
@@ -106,26 +157,44 @@ const authSlice = createSlice({
       state.isAuthenticated = !!action.payload;
       state.loading = false;
     },
-    logoutUser: (state) => {
-      state.user = null;
-      state.profile = null;
-      state.isAuthenticated = false;
-      state.loading = false;
-      state.error = null;
-    },
     clearAuthError: (state) => {
       state.error = null;
     },
   },
   extraReducers: (builder) => {
     builder
+      .addCase(checkAuthSession.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(checkAuthSession.fulfilled, (state, action) => {
+        state.loading = false;
+        if (action.payload) {
+          state.user = action.payload.user;
+          state.profile = action.payload.profile;
+          state.isAuthenticated = true;
+        } else {
+          state.user = null;
+          state.profile = null;
+          state.isAuthenticated = false;
+        }
+      })
+      .addCase(checkAuthSession.rejected, (state, action) => {
+        state.loading = false;
+        state.user = null;
+        state.profile = null;
+        state.isAuthenticated = false;
+        state.error = action.payload as string;
+      })
+
       .addCase(loginWithEmail.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(loginWithEmail.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload;
+        state.user = action.payload.user;
+        state.profile = action.payload.profile;
         state.isAuthenticated = true;
       })
       .addCase(loginWithEmail.rejected, (state, action) => {
@@ -133,11 +202,29 @@ const authSlice = createSlice({
         state.error = action.payload as string;
       })
 
+      // Вхід через Google
       .addCase(loginWithGoogle.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(loginWithGoogle.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+
+      // Вихід із системи
+      .addCase(logoutUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.user = null;
+        state.profile = null;
+        state.isAuthenticated = false;
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(logoutUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       })
@@ -169,5 +256,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { setUser, logoutUser, clearAuthError } = authSlice.actions;
+export const { setUser, clearAuthError } = authSlice.actions;
 export default authSlice.reducer;

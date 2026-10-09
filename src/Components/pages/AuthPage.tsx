@@ -1,3 +1,4 @@
+import React from 'react'
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../store";
@@ -34,7 +35,7 @@ export default function AuthPage() {
 
   return (
     <main className="min-h-screen w-full bg-[#0d071e] text-slate-200 flex flex-col justify-between p-6 lg:p-10 relative overflow-hidden font-sans">
-      <div className={`${styles.blobPurple} absolute top-1/4 left-1/6 w-96 h-96 bg-[#6f4bf2] rounded-full blur-[130px] pointer-events-none`} />      
+      <div className={`${styles.blobPurple} absolute top-1/4 left-1/6 w-96 h-96 bg-[#6f4bf2] rounded-full blur-[130px] pointer-events-none`} />
       <div className="absolute bottom-1/4 right-1/6 w-96 h-96 bg-[#cdf27e]/10 rounded-full blur-[120px] pointer-events-none" />
       <div className={`${styles.blobLime} absolute bottom-1/4 right-1/6 w-96 h-96 bg-[#cdf27e] rounded-full blur-[130px] pointer-events-none`} />
       <AuthHeader />
