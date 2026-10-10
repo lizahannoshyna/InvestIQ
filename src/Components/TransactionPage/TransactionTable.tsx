@@ -27,8 +27,8 @@ export const TransactionTable: React.FC<Props> = ({
   };
 
   return (
-    <div className="flex-1 max-h-[380px] overflow-y-auto">
-      <table className="w-full border-collapse text-left">
+    <div className="flex-1 max-h-[380px] overflow-y-auto overflow-x-auto w-full">
+      <table className="w-full border-collapse text-left min-w-[550px] sm:min-w-full">
         <thead>
           <tr className="bg-[#100b26] h-10 font-bold text-xs text-[#a2a0b3]">
             <th className="pl-5 rounded-l-lg">ДАТА</th>
@@ -45,12 +45,13 @@ export const TransactionTable: React.FC<Props> = ({
               key={tx.id}
               className="border-b border-[#251d4a] h-10 text-xs text-[#d1cfdf] hover:bg-[#211a47] transition-colors"
             >
-              <td className="pl-5">{formatDate(tx.date)}</td>
-              <td>{tx.description}</td>
-              <td>{tx.categories?.name || "Інше"}</td>
+              <td className="pl-5 whitespace-nowrap">{formatDate(tx.date)}</td>
+              <td className="max-w-[150px] sm:max-w-xs truncate">{tx.description}</td>
+              <td className="whitespace-nowrap">{tx.categories?.name || "Інше"}</td>
               <td
-                className={`font-bold ${activeType === "expense" ? "text-[#E7192E]" : "text-[#4070E6]"
-                  }`}
+                className={`font-bold whitespace-nowrap ${
+                  activeType === "expense" ? "text-[#E7192E]" : "text-[#4070E6]"
+                }`}
               >
                 {activeType === "expense"
                   ? `- ${Number(tx.amount).toFixed(2)} грн.`

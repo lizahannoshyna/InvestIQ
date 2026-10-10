@@ -46,17 +46,21 @@ export const TransactionsPage: React.FC = () => {
 
       <TransactionTabs activeType={activeType} />
 
-      <div className="bg-[#181236] rounded-b-3xl rounded-tr-3xl p-[30px] shadow-[0px_10px_60px_rgba(0,0,0,0.4)] border border-[#251d4a]">
+      <div className="bg-[#181236] rounded-b-3xl rounded-tr-3xl p-4 sm:p-[30px] shadow-[0px_10px_60px_rgba(0,0,0,0.4)] border border-[#251d4a]">
         <TransactionForm />
 
-        <div className="flex gap-[30px] items-start mt-6">
-          <TransactionTable
-            transactions={transactions}
-            activeType={activeType}
-            onDelete={handleDelete}
-          />
+        <div className="flex flex-col lg:flex-row gap-6 items-start mt-6">
+          <div className="w-full flex-1 order-2 lg:order-1">
+            <TransactionTable
+              transactions={transactions}
+              activeType={activeType}
+              onDelete={handleDelete}
+            />
+          </div>
 
-          <MonthlySummary summary={summary} />
+          <div className="w-full lg:w-auto order-1 lg:order-2">
+            <MonthlySummary summary={summary} />
+          </div>
         </div>
 
         <Outlet />

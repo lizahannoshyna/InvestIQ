@@ -11,12 +11,12 @@ interface Props {
 
 export const MonthlySummary: React.FC<Props> = ({ summary }) => {
   return (
-    <div className="w-[210px] bg-[#100b26] rounded-t-2xl rounded-br-2xl overflow-hidden border border-[#251d4a]">
+    <div className="w-full md:w-[210px] bg-[#100b26] rounded-2xl md:rounded-t-2xl md:rounded-br-2xl overflow-hidden border border-[#251d4a]">
       <div className="text-center font-bold text-xs py-3 border-b border-[#251d4a] text-white">
         ЗВЕДЕННЯ
       </div>
 
-      <div>
+      <div className="max-h-[300px] overflow-y-auto">
         {summary.map((item) => (
           <div
             key={item.month}
