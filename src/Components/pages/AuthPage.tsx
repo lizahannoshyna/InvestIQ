@@ -1,4 +1,3 @@
-import React from 'react'
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../store";
